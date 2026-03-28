@@ -30,5 +30,69 @@
       "Real Estate": [3, 20, 3],
       "Materials": [2, 15, 3]
     }
+  },
+  {
+    "event": "Major Vaccine Approval",
+    "effects": {
+      "Information Technology": [5, 5, 5],
+      "Health Care": [9, 10, 8],
+      "Financials": [6, 5, 6],
+      "Consumer Discretionary": [7, 5, 6],
+      "Communication Services": [5, 5, 5],
+      "Industrials": [6, 5, 6],
+      "Consumer Staples": [5, 5, 5],
+      "Energy": [5, 5, 5],
+      "Utilities": [5, 5, 5],
+      "Real Estate": [5, 5, 5],
+      "Materials": [5, 5, 5]
+    }
+  },
+  {
+    "event": "Geopolitical Tension Escalates",
+    "effects": {
+      "Information Technology": [4, 10, 4],
+      "Health Care": [5, 10, 5],
+      "Financials": [3, 15, 3],
+      "Consumer Discretionary": [4, 10, 4],
+      "Communication Services": [4, 10, 4],
+      "Industrials": [3, 15, 3],
+      "Consumer Staples": [5, 10, 5],
+      "Energy": [6, 15, 6],
+      "Utilities": [5, 10, 5],
+      "Real Estate": [4, 10, 4],
+      "Materials": [3, 15, 3]
+    }
+  },
+  {
+    "event": "Central Bank Interest Rate Hike",
+    "effects": {
+      "Information Technology": [4, 5, 4],
+      "Health Care": [5, 5, 5],
+      "Financials": [7, 10, 6],
+      "Consumer Discretionary": [3, 5, 3],
+      "Communication Services": [4, 5, 4],
+      "Industrials": [5, 5, 5],
+      "Consumer Staples": [5, 5, 5],
+      "Energy": [5, 5, 5],
+      "Utilities": [3, 5, 3],
+      "Real Estate": [3, 10, 3],
+      "Materials": [4, 5, 4]
+    }
+  },
+  {
+    "event": "Oil Supply Shock",
+    "effects": {
+      "Information Technology": [5, 5, 5],
+      "Health Care": [5, 5, 5],
+      "Financials": [5, 5, 5],
+      "Consumer Discretionary": [4, 5, 4],
+      "Communication Services": [5, 5, 5],
+      "Industrials": [6, 5, 6],
+      "Consumer Staples": [5, 5, 5],
+      "Energy": [9, 10, 8],
+      "Utilities": [6, 5, 6],
+      "Real Estate": [5, 5, 5],
+      "Materials": [6, 5, 6]
+    }
   }
 ]
