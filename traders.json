@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Alice",
+    "money": 10000,
+    "risk": 0.7,
+    "likes": ["tech"],
+    "dislikes": ["energy"]
+  }
+]
