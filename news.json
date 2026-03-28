@@ -1,0 +1,35 @@
+[
+  {
+    "event": "New AI breakthrough",
+    "effects": {
+      "Information Technology": 6,
+      "Health Care": 5,
+      "Financials": 6,
+      "Consumer Discretionary": 4,
+      "Communication Services": 3,
+      "Industrials": 5,
+      "Consumer Staples": 7,
+      "Energy": 8,
+      "Utilities": 10,
+      "Real Estate": 9,
+      "Materials": 2
+    }
+  },
+  {
+    "event": "Global Market Crash",
+    "effects": {
+     "effects": {
+      "Information Technology": 9,
+      "Health Care": 3,
+      "Financials": 4,
+      "Consumer Discretionary": 2,
+      "Communication Services": 5,
+      "Industrials": 6,
+      "Consumer Staples": 7,
+      "Energy": 8,
+      "Utilities": 10,
+      "Real Estate": 9,
+      "Materials": 2
+    }
+  }
+]
