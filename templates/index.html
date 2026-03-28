@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Search Site</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #0f172a;
+            color: white;
+            font-family: Arial;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* News ticker */
+        .ticker {
+            width: 100%;
+            background: #1e293b;
+            padding: 10px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .ticker span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: scroll 12s linear infinite;
+        }
+
+        @keyframes scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
+        }
+
+        /* Center content */
+        .container {
+            margin-top: 150px;
+        }
+
+        input {
+            width: 400px;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+        }
+
+        /* Bottom buttons */
+        .buttons {
+            position: fixed;
+            bottom: 30px;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- News ticker -->
+<div class="ticker">
+    <span id="news">Welcome to your custom search engine</span>
+</div>
+
+<!-- Search -->
+<div class="container">
+    <form action="/search" method="GET">
+        <input type="text" name="q" placeholder="Search...">
+    </form>
+</div>
+
+<!-- Buttons -->
+<div class="buttons">
+    <button onclick="location.href='/'">Home</button>
+    <button>Option 2</button>
+    <button>Option 3</button>
+    <button>Option 4</button>
+</div>
+
+<script>
+const headlines = [
+    "Breaking: Your site is working 🎉",
+    "Tech: Flask search engine running",
+    "Next step: Add real data",
+    "Tip: Customize your UI"
+];
+
+let i = 0;
+setInterval(() => {
+    document.getElementById("news").textContent = headlines[i];
+    i = (i + 1) % headlines.length;
+}, 3000);
+</script>
+
+</body>
+</html>
