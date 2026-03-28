@@ -104,15 +104,12 @@
         /* Palm Image */
         .palm-img {
         position: absolute;
-        bottom: -10px;
+        bottom: -20px;
         right: 0;
         height: 380px;
         z-index: 1;
-        background: transparent;
-        mix-blend-mode: multiply;
 
-        /* Makes it blend nicely with background */
-        filter: drop-shadow(0 15px 20px rgba(0,0,0,0.25));
+        filter: drop-shadow(0 20px 25px rgba(0,0,0,0.3));
         }
     </style>
 </head>
@@ -130,13 +127,11 @@
 
     <div class="buttons">
         <button onclick="location.href='/'">Home</button>
-        <button>Option 2</button>
-        <button>Option 3</button>
-        <button>Option 4</button>
+        <button>Go to Chart</button>
     </div>
 
     <!-- 🌴 Palm Tree Image -->
-    <img src="{{ url_for('static', filename='images/palm.png') }}" class="palm-img">
+    <img src="{{ url_for('static', filename='images/palmtree.png') }}" class="palm-img">
 
     <script>
         const headlines = [
