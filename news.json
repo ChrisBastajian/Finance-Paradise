@@ -18,7 +18,6 @@
   {
     "event": "Global Market Crash",
     "effects": {
-     "effects": {
       "Information Technology": 9,
       "Health Care": 3,
       "Financials": 4,
@@ -31,4 +30,5 @@
       "Real Estate": 9,
       "Materials": 2
     }
-  }}
+  }
+]
