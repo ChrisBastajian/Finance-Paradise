@@ -2,33 +2,33 @@
   {
     "event": "New AI breakthrough",
     "effects": {
-      "Information Technology": 6,
-      "Health Care": 5,
-      "Financials": 6,
-      "Consumer Discretionary": 4,
-      "Communication Services": 3,
-      "Industrials": 5,
-      "Consumer Staples": 7,
-      "Energy": 8,
-      "Utilities": 10,
-      "Real Estate": 9,
-      "Materials": 2
+      "Information Technology": [8, 5, 7],
+      "Health Care": [5, 5, 5],
+      "Financials": [6, 5, 6],
+      "Consumer Discretionary": [5, 5, 5],
+      "Communication Services": [7, 5, 6],
+      "Industrials": [5, 5, 5],
+      "Consumer Staples": [4, 5, 4],
+      "Energy": [3, 5, 4],
+      "Utilities": [5, 5, 5],
+      "Real Estate": [5, 5, 5],
+      "Materials": [6, 5, 6]
     }
   },
   {
     "event": "Global Market Crash",
     "effects": {
-      "Information Technology": 9,
-      "Health Care": 3,
-      "Financials": 4,
-      "Consumer Discretionary": 2,
-      "Communication Services": 5,
-      "Industrials": 6,
-      "Consumer Staples": 7,
-      "Energy": 8,
-      "Utilities": 10,
-      "Real Estate": 9,
-      "Materials": 2
+      "Information Technology": [2, 20, 3],
+      "Health Care": [3, 10, 4],
+      "Financials": [2, 20, 3],
+      "Consumer Discretionary": [2, 20, 2],
+      "Communication Services": [3, 10, 3],
+      "Industrials": [2, 20, 3],
+      "Consumer Staples": [4, 10, 4],
+      "Energy": [5, 15, 5],
+      "Utilities": [6, 10, 6],
+      "Real Estate": [3, 20, 3],
+      "Materials": [2, 15, 3]
     }
   }
 ]
