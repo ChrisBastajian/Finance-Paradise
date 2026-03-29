@@ -13,23 +13,19 @@
         .ticker-content { display: inline-block; padding-left: 100%; animation: ticker-scroll 20s linear infinite; font-weight: 700; font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; }
         @keyframes ticker-scroll { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 
-        /* UPDATED LAYOUT STYLES */
         .main-wrapper { display: flex; align-items: flex-start; gap: 25px; width: 98%; max-width: 1800px; margin-top: 15px; padding-bottom: 40px; }
         #chart-frame { flex: 1; height: 700px; border: none; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.25); background: #000; }
         .panel { width: 340px; flex-shrink: 0; background: rgba(255, 255, 255, 0.4); padding: 30px; border-radius: 20px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 20px; }
-        /* -------------------- */
 
-        /* DEEPSKYBLUE PORTFOLIO CARD */
         .portfolio-card { background-color: deepskyblue; color: black; font-weight: bold; padding: 20px; border-radius: 15px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); font-size: 0.95rem; }
         .portfolio-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
         .portfolio-row:last-child { margin-bottom: 0; }
         .val-green { color: #10b981; font-weight: 700; }
         .val-red { color: #ef4444; font-weight: 700; }
-        .val-neutral { color: black; font-weight: 700; } /* Set to black to match the deepskyblue theme */
+        .val-neutral { color: black; font-weight: 700; }
 
         label { font-weight: 700; color: #1e293b; font-size: 0.95rem; }
 
-        /* SELECT FIXES */
         select {
             padding: 10px;
             border-radius: 12px;
@@ -50,7 +46,6 @@
         button:hover { transform: translateY(-3px); filter: brightness(1.1); }
         .news-btn { background: linear-gradient(45deg, #f59e0b, #d97706); width: 100%; }
 
-        /* IMPACT BUTTON */
         .impact-btn { background: #64748b; width: 100%; margin-top: 5px; }
         .impact-btn.on { background: #8b5cf6; box-shadow: 0 0 15px rgba(139, 92, 246, 0.6); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(139,92,246,0.7); } 70% { box-shadow: 0 0 0 10px rgba(139,92,246,0); } 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0); } }
@@ -61,6 +56,103 @@
         .slider-container { background: rgba(255,255,255,0.3); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.5); }
         input[type="range"] { width: 100%; height: 8px; border-radius: 5px; background: #cbd5e1; outline: none; appearance: none; margin-top: 12px; }
         input[type="range"]::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #0f172a; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+
+        .money-rain {
+            position: fixed;
+            top: -80px;
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 9998;
+            animation: float-money linear forwards;
+            opacity: 0.9;
+        }
+
+        @keyframes float-money {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.95;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .storm-drop {
+            position: fixed;
+            top: -120px;
+            width: 4px;
+            height: 38px;
+            background: linear-gradient(to bottom, rgba(220,240,255,0.2), rgba(173,216,255,0.95));
+            border-radius: 999px;
+            pointer-events: none;
+            z-index: 9997;
+            opacity: 0.9;
+            animation: storm-fall linear forwards;
+        }
+
+        @keyframes storm-fall {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.95;
+            }
+            100% {
+                transform: translateY(120vh);
+                opacity: 0;
+            }
+        }
+
+        .lightning-flash {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.75);
+            pointer-events: none;
+            z-index: 9996;
+            opacity: 0;
+        }
+
+        .lightning-flash.active {
+            animation: lightning 0.35s ease-out;
+        }
+
+        @keyframes lightning {
+            0% { opacity: 0; }
+            10% { opacity: 0.95; }
+            25% { opacity: 0.25; }
+            40% { opacity: 0.85; }
+            100% { opacity: 0; }
+        }
+
+        .thunder-icon {
+            position: fixed;
+            top: -60px;
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.95;
+            animation: thunder-fall linear forwards;
+            filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+        }
+
+        @keyframes thunder-fall {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(115vh);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -68,6 +160,8 @@
     <div id="news-bar" class="news-ticker-bar">
         <div class="ticker-wrap"><div id="ticker-text" class="ticker-content">AWAITING MARKET DATA FEED...</div></div>
     </div>
+
+    <div id="lightning-flash" class="lightning-flash"></div>
 
     <h1>Market Simulator 📈</h1>
 
@@ -78,7 +172,8 @@
             <div class="portfolio-card">
                 <div class="portfolio-row"><span>Account Balance:</span><span id="ui-balance" class="val-neutral">$100,000.00</span></div>
                 <div class="portfolio-row"><span>Total Realized PnL:</span><span id="ui-realized" class="val-neutral">$0.00</span></div>
-                <hr style="border-top: 1px solid rgba(0,0,0,0.2); margin: 12px 0;"> <div class="portfolio-row"><span id="ui-sector-label">Total Market Pos:</span><span id="ui-position" class="val-neutral">0</span></div>
+                <hr style="border-top: 1px solid rgba(0,0,0,0.2); margin: 12px 0;">
+                <div class="portfolio-row"><span id="ui-sector-label">Total Market Pos:</span><span id="ui-position" class="val-neutral">0</span></div>
                 <div class="portfolio-row"><span>Current Asset PnL:</span><span id="ui-unrealized" class="val-neutral">$0.00</span></div>
             </div>
 
@@ -138,6 +233,7 @@
         const tickerText = document.getElementById("ticker-text");
         const sectorSelect = document.getElementById("sector-select");
         const tfSelect = document.getElementById("tf-select");
+        const lightningFlash = document.getElementById("lightning-flash");
 
         slider.oninput = () => { valDisp.textContent = slider.value; };
 
@@ -195,6 +291,102 @@
 
         const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
+        let moneyRainInterval = null;
+        let stormRainInterval = null;
+        let lightningInterval = null;
+        let thunderIconInterval = null;
+
+        function createMoneyBill() {
+            const bill = document.createElement('div');
+            bill.className = 'money-rain';
+            bill.textContent = '💵';
+            bill.style.left = Math.random() * 100 + 'vw';
+            bill.style.animationDuration = (3 + Math.random() * 2) + 's';
+            bill.style.fontSize = (1.5 + Math.random() * 1.5) + 'rem';
+            document.body.appendChild(bill);
+
+            setTimeout(() => bill.remove(), 5000);
+        }
+
+        function startMoneyRain() {
+            if (moneyRainInterval) return;
+            moneyRainInterval = setInterval(createMoneyBill, 250);
+        }
+
+        function stopMoneyRain() {
+            clearInterval(moneyRainInterval);
+            moneyRainInterval = null;
+        }
+
+        function createStormDrop() {
+            const drop = document.createElement('div');
+            drop.className = 'storm-drop';
+            drop.style.left = Math.random() * 100 + 'vw';
+            drop.style.animationDuration = (0.6 + Math.random() * 0.5) + 's';
+            drop.style.height = (28 + Math.random() * 26) + 'px';
+            drop.style.width = (3 + Math.random() * 2) + 'px';
+            document.body.appendChild(drop);
+
+            setTimeout(() => drop.remove(), 1500);
+        }
+
+        function createThunderIcon() {
+            const thunder = document.createElement('div');
+            thunder.className = 'thunder-icon';
+            thunder.textContent = '⚡';
+            thunder.style.left = Math.random() * 100 + 'vw';
+            thunder.style.animationDuration = (1.2 + Math.random() * 1.2) + 's';
+            thunder.style.fontSize = (1.6 + Math.random() * 1.4) + 'rem';
+            document.body.appendChild(thunder);
+
+            setTimeout(() => thunder.remove(), 3000);
+        }
+
+        function triggerLightning() {
+            lightningFlash.classList.remove('active');
+            void lightningFlash.offsetWidth;
+            lightningFlash.classList.add('active');
+        }
+
+        function startThunderstorm() {
+            if (!stormRainInterval) {
+                stormRainInterval = setInterval(() => {
+                    for (let i = 0; i < 6; i++) {
+                        createStormDrop();
+                    }
+                }, 120);
+            }
+
+            if (!lightningInterval) {
+                lightningInterval = setInterval(() => {
+                    if (Math.random() < 0.35) {
+                        triggerLightning();
+                    }
+                }, 1400);
+            }
+
+            if (!thunderIconInterval) {
+                thunderIconInterval = setInterval(() => {
+                    if (Math.random() < 0.55) {
+                        createThunderIcon();
+                    }
+                }, 700);
+            }
+        }
+
+        function stopThunderstorm() {
+            clearInterval(stormRainInterval);
+            stormRainInterval = null;
+
+            clearInterval(lightningInterval);
+            lightningInterval = null;
+
+            clearInterval(thunderIconInterval);
+            thunderIconInterval = null;
+
+            lightningFlash.classList.remove('active');
+        }
+
         function pollPortfolio() {
             const sector = encodeURIComponent(sectorSelect.value);
             fetch(`/api/portfolio?sector=${sector}`)
@@ -205,6 +397,17 @@
                 const realizedEl = document.getElementById('ui-realized');
                 realizedEl.textContent = formatter.format(data.realized_pnl);
                 realizedEl.className = data.realized_pnl > 0 ? 'val-green' : (data.realized_pnl < 0 ? 'val-red' : 'val-neutral');
+
+                if (data.realized_pnl > 0) {
+                    startMoneyRain();
+                    stopThunderstorm();
+                } else if (data.realized_pnl < 0) {
+                    stopMoneyRain();
+                    startThunderstorm();
+                } else {
+                    stopMoneyRain();
+                    stopThunderstorm();
+                }
 
                 const posEl = document.getElementById('ui-position');
                 posEl.textContent = data.position;

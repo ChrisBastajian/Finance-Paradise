@@ -34,21 +34,22 @@
 
         /* News ticker */
         .ticker {
-            width: 100%;
-            background: rgba(255,255,255,0.6);
-            backdrop-filter: blur(10px);
-            padding: 12px;
-            overflow: hidden;
-            white-space: nowrap;
-            font-weight: bold;
-            z-index: 2;
-            box-sizing: border-box;
+        width: 100%;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(10px);
+        padding: 14px;
+        overflow: hidden;
+        white-space: nowrap;
+        font-weight: bold;
+        font-size: 20px; /* 🔥 bigger text */
+        z-index: 2;
+        box-sizing: border-box;
         }
 
         .ticker span {
             display: inline-block;
             padding-left: 100%;
-            animation: scroll 12s linear infinite;
+            animation: scroll 18s linear infinite;
         }
 
         @keyframes scroll {
@@ -199,7 +200,7 @@
 
 <body>
     <div class="ticker">
-        <span id="news">Welcome to your custom search engine</span>
+        <span id="news">🌴 Welcome to Financial Paradise</span>
     </div>
 
     <div class="container">
@@ -218,10 +219,9 @@
 
     <script>
         const headlines = [
-            "Breaking: Your site is working :tada:",
-            "Tech: Flask search engine running",
-            "Next step: Add real data",
-            "Tip: Customize your UI"
+            "🌴 Welcome to Financial Paradise",
+            "💰 Experience the future of market simulation",
+            "📈 Buy, Sell, and watch the market move",
         ];
 
         let i = 0;
