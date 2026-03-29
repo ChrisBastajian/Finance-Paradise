@@ -88,6 +88,7 @@ class Market:
         self.vol_buy_candle = 0
         self.vol_sell_candle = 0
         self.candles = []
+        self.candle_counter = 0
 
         self.market_bias = 0.0
         self.news_candles_remaining = 0
@@ -121,19 +122,25 @@ class Market:
             self.percentages[3] += 0.3 * redistribute
             self.percentages[4] += 0.3 * redistribute
 
+        # FIX: Protect against ZeroDivisionError if percentages zero out
         total = sum(self.percentages)
-        self.percentages = [max(0, p / total) for p in self.percentages]
+        if total <= 0:
+            self.percentages = [0.2, 0.1, 0.15, 0.2, 0.1, 0.15, 0.1]
+        else:
+            self.percentages = [max(0, p / total) for p in self.percentages]
 
         types = ["trend", "aggr_trend", "mean", "panic", "aggr_panic", "fundamental", "noise"]
         for t in self.traders:
-            t.type = np.random.choice(types, p=self.percentages)
+            # FIX: Native random.choices doesn't crash on float precision
+            t.type = random.choices(types, weights=self.percentages, k=1)[0]
 
 
 class Trader:
     def __init__(self, mkt):
         self.mkt = mkt
-        self.type = np.random.choice(["trend", "aggr_trend", "mean", "panic", "aggr_panic", "fundamental", "noise"],
-                                     p=self.mkt.percentages)
+        types = ["trend", "aggr_trend", "mean", "panic", "aggr_panic", "fundamental", "noise"]
+        # NEW: Use Python's built-in random.choices instead of numpy
+        self.type = random.choices(types, weights=self.mkt.percentages, k=1)[0]
         self.memory = []
 
     def act(self, current_p, ref):
@@ -203,99 +210,107 @@ total_market = Market("Total Market")
 def simulation_loop():
     t = 0
     while True:
-        with lock:
-            for name, mkt in markets.items():
-                mkt.price *= (1 + LONG_TERM_DRIFT * PRICE_SCALE)
+        try:
+            with lock:
+                for name, mkt in markets.items():
+                    mkt.price *= (1 + LONG_TERM_DRIFT * PRICE_SCALE)
 
-                for _ in range(ORDERS_PER_TICK):
-                    tr = random.choice(mkt.traders)
-                    action = tr.act(mkt.price, mkt.ref_price)
-                    if not action: continue
+                    for _ in range(ORDERS_PER_TICK):
+                        tr = random.choice(mkt.traders)
+                        action = tr.act(mkt.price, mkt.ref_price)
+                        if not action: continue
 
-                    if action[0] == "limit":
-                        _, side, p_lim, vol = action
-                        if side == "buy":
-                            add_order(mkt.bids, mkt.bid_prices, p_lim, vol)
+                        if action[0] == "limit":
+                            _, side, p_lim, vol = action
+                            if side == "buy":
+                                add_order(mkt.bids, mkt.bid_prices, p_lim, vol)
+                            else:
+                                add_order(mkt.asks, mkt.ask_prices, p_lim, vol)
                         else:
-                            add_order(mkt.asks, mkt.ask_prices, p_lim, vol)
-                    else:
-                        _, side, vol = action
-                        if side == "buy" and mkt.ask_prices:
-                            ap = mkt.ask_prices[0]
-                            remove_order(mkt.asks, mkt.ask_prices, ap, vol)
-                            mkt.price += (ap - mkt.price) * PRICE_SCALE
-                            mkt.vol_buy_candle += vol
-                        elif side == "sell" and mkt.bid_prices:
-                            bp = mkt.bid_prices[-1]
-                            remove_order(mkt.bids, mkt.bid_prices, bp, vol)
-                            mkt.price += (bp - mkt.price) * PRICE_SCALE
-                            mkt.vol_sell_candle += vol
+                            _, side, vol = action
+                            if side == "buy" and mkt.ask_prices:
+                                ap = mkt.ask_prices[0]
+                                remove_order(mkt.asks, mkt.ask_prices, ap, vol)
+                                mkt.price += (ap - mkt.price) * PRICE_SCALE
+                                mkt.vol_buy_candle += vol
+                            elif side == "sell" and mkt.bid_prices:
+                                bp = mkt.bid_prices[-1]
+                                remove_order(mkt.bids, mkt.bid_prices, bp, vol)
+                                mkt.price += (bp - mkt.price) * PRICE_SCALE
+                                mkt.vol_sell_candle += vol
 
-                trades = []
-                while mkt.bid_prices and mkt.ask_prices and mkt.bid_prices[-1] >= mkt.ask_prices[0]:
-                    bp, ap = mkt.bid_prices[-1], mkt.ask_prices[0]
-                    vol = min(mkt.bids[bp], mkt.asks[ap])
-                    trade_price = (bp + ap) / 2
-                    trades.append((trade_price, vol))
-                    remove_order(mkt.bids, mkt.bid_prices, bp, vol)
-                    remove_order(mkt.asks, mkt.ask_prices, ap, vol)
+                    trades = []
+                    while mkt.bid_prices and mkt.ask_prices and mkt.bid_prices[-1] >= mkt.ask_prices[0]:
+                        bp, ap = mkt.bid_prices[-1], mkt.ask_prices[0]
+                        vol = min(mkt.bids[bp], mkt.asks[ap])
+                        trade_price = (bp + ap) / 2
+                        trades.append((trade_price, vol))
+                        remove_order(mkt.bids, mkt.bid_prices, bp, vol)
+                        remove_order(mkt.asks, mkt.ask_prices, ap, vol)
 
-                for p_trade, v_trade in trades:
-                    mkt.price += (p_trade - mkt.price) * PRICE_SCALE
-                    mkt.price = max(0.01, mkt.price)
-                    mid = (mkt.bid_prices[-1] + mkt.ask_prices[
-                        0]) / 2 if mkt.bid_prices and mkt.ask_prices else mkt.price
-                    if p_trade >= mid:
-                        mkt.vol_buy_candle += v_trade
-                    else:
-                        mkt.vol_sell_candle += v_trade
+                    for p_trade, v_trade in trades:
+                        mkt.price += (p_trade - mkt.price) * PRICE_SCALE
+                        mkt.price = max(0.01, mkt.price)
+                        mid = (mkt.bid_prices[-1] + mkt.ask_prices[
+                            0]) / 2 if mkt.bid_prices and mkt.ask_prices else mkt.price
+                        if p_trade >= mid:
+                            mkt.vol_buy_candle += v_trade
+                        else:
+                            mkt.vol_sell_candle += v_trade
 
-                for book, plist in [(mkt.bids, mkt.bid_prices), (mkt.asks, mkt.ask_prices)]:
-                    for p_ in plist.copy():
-                        if np.random.rand() < CANCEL_PROB:
-                            remove_order(book, plist, p_, 1)
+                    for book, plist in [(mkt.bids, mkt.bid_prices), (mkt.asks, mkt.ask_prices)]:
+                        for p_ in plist.copy():
+                            if np.random.rand() < CANCEL_PROB:
+                                remove_order(book, plist, p_, 1)
 
-                mkt.ref_price = 0.99 * mkt.ref_price + 0.01 * mkt.price
-                mkt.prices.append(mkt.price)
+                    mkt.ref_price = 0.99 * mkt.ref_price + 0.01 * mkt.price
+                    mkt.prices.append(mkt.price)
 
-                if mkt.news_candles_remaining > 1:
-                    mkt.news_candles_remaining -= 1
-                elif mkt.news_candles_remaining == 1:
-                    mkt.change_percentages(mkt.long_term_effect)
-                    mkt.news_candles_remaining -= 1
-                    mkt.market_bias = 0.0
+                    if mkt.news_candles_remaining > 1:
+                        mkt.news_candles_remaining -= 1
+                    elif mkt.news_candles_remaining == 1:
+                        mkt.change_percentages(mkt.long_term_effect)
+                        mkt.news_candles_remaining -= 1
+                        mkt.market_bias = 0.0
 
-            avg_price = sum(m.price for m in markets.values()) / len(markets)
-            total_market.price = avg_price
-            total_market.prices.append(avg_price)
-            total_market.vol_buy_candle += sum(m.vol_buy_candle for m in markets.values())
-            total_market.vol_sell_candle += sum(m.vol_sell_candle for m in markets.values())
+                # Calculate total market price
+                avg_price = sum(m.price for m in markets.values()) / len(markets)
+                total_market.price = avg_price
+                total_market.prices.append(avg_price)
 
-            if (t + 1) % CANDLE_SIZE == 0:
-                all_markets = list(markets.values()) + [total_market]
-                for mkt in all_markets:
-                    mkt.volume_buy.append(mkt.vol_buy_candle)
-                    mkt.volume_sell.append(mkt.vol_sell_candle)
-                    mkt.vol_buy_candle = 0
-                    mkt.vol_sell_candle = 0
+                if (t + 1) % CANDLE_SIZE == 0:
+                    # Calculate Total Market volume ONCE per candle correctly
+                    total_market.vol_buy_candle = sum(m.vol_buy_candle for m in markets.values())
+                    total_market.vol_sell_candle = sum(m.vol_sell_candle for m in markets.values())
 
-                    if len(mkt.prices) >= CANDLE_SIZE:
-                        chunk = mkt.prices[-CANDLE_SIZE:]
-                        mkt.candles.append((chunk[0], max(chunk), min(chunk), chunk[-1]))
+                    all_markets = list(markets.values()) + [total_market]
+                    for mkt in all_markets:
+                        mkt.volume_buy.append(mkt.vol_buy_candle)
+                        mkt.volume_sell.append(mkt.vol_sell_candle)
+                        mkt.vol_buy_candle = 0
+                        mkt.vol_sell_candle = 0
 
-                    # PREVENT MEMORY LEAK: Keep raw prices short
-                    if len(mkt.prices) > 50:
-                        mkt.prices = mkt.prices[-50:]
+                        if len(mkt.prices) >= CANDLE_SIZE:
+                            chunk = mkt.prices[-CANDLE_SIZE:]
+                            # Append the absolute counter as the first item in the candle
+                            mkt.candles.append((mkt.candle_counter, chunk[0], max(chunk), min(chunk), chunk[-1]))
+                            mkt.candle_counter += 1
 
-                    # Store plenty of candles for higher timeframes
-                    if len(mkt.candles) > 15000:
-                        mkt.candles = mkt.candles[-15000:]
-                        mkt.volume_buy = mkt.volume_buy[-15000:]
-                        mkt.volume_sell = mkt.volume_sell[-15000:]
+                        if len(mkt.prices) > 50:
+                            mkt.prices = mkt.prices[-50:]
+
+                        # Slice lists safely to prevent memory leaks
+                        if len(mkt.candles) > 15000:
+                            mkt.candles = mkt.candles[-15000:]
+                            mkt.volume_buy = mkt.volume_buy[-15000:]
+                            mkt.volume_sell = mkt.volume_sell[-15000:]
+
+        except Exception as e:
+            # If a math bug happens, it will print here instead of permanently killing the app
+            print(f"CRASH AVOIDED IN SIMULATION TICK {t}: {e}")
 
         t += 1
         time.sleep(0.1)
-
 
 threading.Thread(target=simulation_loop, daemon=True).start()
 
@@ -487,20 +502,23 @@ def api_portfolio():
 # DASH APP
 # -----------------------
 def aggregate_candles(base_candles, b_vol, s_vol, window):
-    if not base_candles: return [], [], []
-    agg_c, agg_b, agg_s = [], [], []
+    if not base_candles: return [], [], [], []
+    agg_x, agg_c, agg_b, agg_s = [], [], [], []
     for i in range(0, len(base_candles), window):
         chunk = base_candles[i: i + window]
         if not chunk: continue
-        o = chunk[0][0]
-        h = max(c[1] for c in chunk)
-        l = min(c[2] for c in chunk)
-        c = chunk[-1][3]
+
+        agg_x.append(chunk[0][0])  # Extract the absolute candle counter for the X-axis
+
+        o = chunk[0][1]
+        h = max(c[2] for c in chunk)
+        l = min(c[3] for c in chunk)
+        c = chunk[-1][4]
+
         agg_c.append((o, h, l, c))
         agg_b.append(sum(b_vol[i: i + window]))
         agg_s.append(sum(s_vol[i: i + window]))
-    return agg_c, agg_b, agg_s
-
+    return agg_x, agg_c, agg_b, agg_s
 
 dash_app = Dash(__name__, server=server, url_base_pathname='/dash-chart/')
 
@@ -534,25 +552,25 @@ def update_chart(_, search, relayout):
         current_position = user_positions.get(sector, 0)
         current_entry_price = user_entry_prices.get(sector, 0.0)
 
-    display_candles, vol_b, vol_s = aggregate_candles(base_c, base_b, base_s, tf)
+    # Unpack the new X-axis values
+    display_x, display_candles, vol_b, vol_s = aggregate_candles(base_c, base_b, base_s, tf)
 
-    # --- ENFORCE MAXIMUM VISIBLE CANDLES ---
     MAX_VISIBLE = 300
+    display_x = display_x[-MAX_VISIBLE:]
     display_candles = display_candles[-MAX_VISIBLE:]
     vol_b = vol_b[-MAX_VISIBLE:]
     vol_s = vol_s[-MAX_VISIBLE:]
 
-    indices = list(range(len(display_candles)))
-
     fig = go.Figure()
     fig.add_trace(go.Candlestick(
-        x=indices, open=[c[0] for c in display_candles], high=[c[1] for c in display_candles],
+        x=display_x,  # Use the absolute counter instead of a static range list
+        open=[c[0] for c in display_candles], high=[c[1] for c in display_candles],
         low=[c[2] for c in display_candles], close=[c[3] for c in display_candles],
         increasing_line_color='#26a69a', decreasing_line_color='#ef5350'
     ))
 
-    fig.add_trace(go.Bar(x=indices, y=vol_b, marker_color='rgba(38, 166, 154, 0.4)', yaxis="y2"))
-    fig.add_trace(go.Bar(x=indices, y=vol_s, marker_color='rgba(239, 83, 80, 0.4)', yaxis="y2"))
+    fig.add_trace(go.Bar(x=display_x, y=vol_b, marker_color='rgba(38, 166, 154, 0.4)', yaxis="y2"))
+    fig.add_trace(go.Bar(x=display_x, y=vol_s, marker_color='rgba(239, 83, 80, 0.4)', yaxis="y2"))
 
     if current_position != 0:
         line_color = '#10b981' if current_position > 0 else '#ef4444'
