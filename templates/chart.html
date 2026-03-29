@@ -3,10 +3,12 @@
 <head>
     <title>Market Chart</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
     <style>
         body {
             margin: 0;
-            font-family: Arial;
+            font-family: 'Poppins', sans-serif;
             background: linear-gradient(to bottom, #87CEEB, #e2cf63);
             display: flex;
             flex-direction: column;
@@ -24,24 +26,77 @@
             border-radius: 20px;
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .left-controls {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         button {
             margin: 10px;
-            padding: 12px 20px;
-            border-radius: 10px;
+            padding: 12px 22px;
+            border-radius: 12px;
             border: none;
-            background: #00b4d8;
+            background: linear-gradient(45deg, #00c9a7, #00b4d8);
             color: white;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
-        input {
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: linear-gradient(45deg, #00b4d8, #0077b6);
+        }
+
+        .slider-label {
+            display: block;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        input[type="range"] {
+            width: 220px;
             margin: 10px;
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
+            appearance: none;
+            height: 10px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #00c9a7, #00b4d8);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        .net-label {
+            margin: 10px;
+            padding: 12px 22px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #00c9a7, #00b4d8);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
     </style>
 </head>
@@ -51,18 +106,41 @@
 <h1>Market Simulator 📈</h1>
 
 <div class="panel">
-    <button>Buy</button>
-    <button>Sell</button>
 
-    <br>
+    <div class="left-controls">
+        <button>Buy</button>
+        <button>Sell</button>
+    </div>
 
-    <input type="number" placeholder="No. of Contracts">
-    <input type="number" placeholder="Net Amount">
+    <div class="right-controls">
+        <label class="slider-label">
+            No. of Contracts: <span id="contractValue">50</span>
+        </label>
+        <input type="range" min="0" max="100" value="50" id="contractSlider">
+
+        <br>
+
+        <label class="net-label">
+            Net Amount: <span id="netAmount"></span>
+        </label>
+    </div>
+
 </div>
 
 <br>
 
 <button onclick="location.href='/'">⬅ Back</button>
+
+<script>
+    const slider = document.getElementById("contractSlider");
+    const output = document.getElementById("contractValue");
+
+    output.textContent = slider.value;
+
+    slider.oninput = function() {
+        output.textContent = this.value;
+    }
+</script>
 
 </body>
 </html>
