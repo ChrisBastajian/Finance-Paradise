@@ -103,14 +103,83 @@
 
         /* Palm Image */
         .palm-img {
-        position: absolute;
-        bottom: -20px;
-        right: 0;
-        height: 380px;
-        z-index: 1;
-
-        filter: drop-shadow(0 20px 25px rgba(0,0,0,0.3));
+            position: absolute;
+            bottom: -20px;
+            right: 0;
+            height: 380px;
+            z-index: 1;
+            filter: drop-shadow(0 20px 25px rgba(0,0,0,0.3));
         }
+        /* Cloud base */
+        .cloud {
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+        opacity: 0.85;
+        z-index: 1;
+        }
+
+        /* Create fluffy effect using multiple circles */
+        .cloud::before,
+        .cloud::after {
+        content: "";
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+        }
+
+        /* Cloud 1 */
+        .cloud1 {
+        width: 120px;
+        height: 60px;
+        top: 80px;
+        left: 200px;
+        animation: cloudMove 30s linear infinite;
+        }
+
+        .cloud1::before {
+        width: 60px;
+        height: 60px;
+        top: -30px;
+        left: 10px;
+        }
+
+        .cloud1::after {
+        width: 70px;
+        height: 70px;
+        top: -35px;
+        right: 10px;
+        }
+
+        /* Cloud 2 */
+        .cloud2 {
+        width: 160px;
+        height: 70px;
+        top: 140px;
+        left: -200px;
+        animation: cloudMove 45s linear infinite;
+        }
+
+        .cloud2::before {
+        width: 80px;
+        height: 80px;
+        top: -40px;
+        left: 20px;
+        }
+
+        .cloud2::after {
+        width: 90px;
+        height: 90px;
+        top: -45px;
+        right: 20px;
+        }
+
+        /* Movement */
+        @keyframes cloudMove {
+        from { transform: translateX(0); }
+        to { transform: translateX(120vw); }
+        }
+
     </style>
 </head>
 
@@ -127,10 +196,12 @@
 
     <div class="buttons">
         <button onclick="location.href='/'">Home</button>
-        <button>Go to Chart</button>
+        <button onclick="location.href='/chart'">Go to Chart</button>
     </div>
 
-    <!-- 🌴 Palm Tree Image -->
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+
     <img src="{{ url_for('static', filename='images/palmtree.png') }}" class="palm-img">
 
     <script>

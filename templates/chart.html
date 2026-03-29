@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Market Chart</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: linear-gradient(to bottom, #87CEEB, #e2cf63);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-top: 40px;
+        }
+
+        .panel {
+            margin-top: 50px;
+            background: rgba(255,255,255,0.4);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        button {
+            margin: 10px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: none;
+            background: #00b4d8;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        input {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Market Simulator 📈</h1>
+
+<div class="panel">
+    <button>Buy</button>
+    <button>Sell</button>
+
+    <br>
+
+    <input type="number" placeholder="No. of Contracts">
+    <input type="number" placeholder="Net Amount">
+</div>
+
+<br>
+
+<button onclick="location.href='/'">⬅ Back</button>
+
+</body>
+</html>
