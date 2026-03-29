@@ -354,39 +354,78 @@ def api_trade():
     contracts = int(data.get("contracts", 0))
     sector = data.get("sector", "Total Market")
 
+    if contracts <= 0:
+        return jsonify({"status": "error", "message": "Invalid quantity"})
+
     with lock:
         qty = contracts if action == "BUY" else -contracts
 
-        # --- NEW: MARKET IMPACT LOGIC ---
-        if user_impact_enabled:
-            # If Total Market, divide the order equally across all sectors
-            markets_to_impact = [markets[sector]] if sector != "Total Market" else list(markets.values())
-            vol_per_market = abs(qty) // len(markets_to_impact) if sector == "Total Market" else abs(qty)
+        # Track the actual cost of the shares as we eat through the limit orders
+        total_execution_cost = 0.0
+        total_executed_qty = 0
 
-            for m in markets_to_impact:
-                remaining_vol = vol_per_market
+        # Target the specific market, or divide equally among all 7 for Total Market
+        markets_to_impact = [markets[sector]] if sector != "Total Market" else list(markets.values())
+        vol_per_market = contracts // len(markets_to_impact) if sector == "Total Market" else contracts
+
+        for m in markets_to_impact:
+            remaining_vol = vol_per_market
+            market_execution_cost = 0.0
+
+            if user_impact_enabled:
                 if action == "BUY":
                     while remaining_vol > 0 and m.ask_prices:
                         ap = m.ask_prices[0]
                         take_vol = min(remaining_vol, m.asks[ap])
                         remove_order(m.asks, m.ask_prices, ap, take_vol)
+
                         m.price += (ap - m.price) * PRICE_SCALE
                         m.vol_buy_candle += take_vol
+
+                        market_execution_cost += ap * take_vol
                         remaining_vol -= take_vol
+
+                    # If the order book dries up, fill the rest at the newly pushed price
+                    if remaining_vol > 0:
+                        market_execution_cost += m.price * remaining_vol
+                        remaining_vol = 0
+
                 else:  # SELL
                     while remaining_vol > 0 and m.bid_prices:
                         bp = m.bid_prices[-1]
                         take_vol = min(remaining_vol, m.bids[bp])
                         remove_order(m.bids, m.bid_prices, bp, take_vol)
+
                         m.price += (bp - m.price) * PRICE_SCALE
                         m.vol_sell_candle += take_vol
+
+                        market_execution_cost += bp * take_vol
                         remaining_vol -= take_vol
-        # --------------------------------
 
-        current_p = total_market.price if sector == "Total Market" else markets[sector].price
+                    if remaining_vol > 0:
+                        market_execution_cost += m.price * remaining_vol
+                        remaining_vol = 0
+            else:
+                # Impact OFF: Infinite liquidity at the current exact price
+                market_execution_cost = m.price * vol_per_market
+                remaining_vol = 0
 
-        u_pos = user_positions[sector]
-        u_entry = user_entry_prices[sector]
+            total_execution_cost += market_execution_cost
+            total_executed_qty += (vol_per_market - remaining_vol)
+
+        # Force an instant update to the Total Market price so the VWAP calculation is accurate
+        avg_price = sum(m.price for m in markets.values()) / len(markets)
+        total_market.price = avg_price
+
+        # Calculate the Volume-Weighted Average Price (VWAP) for the final entry
+        if total_executed_qty > 0:
+            current_p = total_execution_cost / total_executed_qty
+        else:
+            current_p = total_market.price if sector == "Total Market" else markets[sector].price
+
+        # --- Standard Accounting Logic ---
+        u_pos = user_positions.get(sector, 0)
+        u_entry = user_entry_prices.get(sector, 0.0)
 
         if u_pos == 0:
             user_positions[sector] += qty
@@ -416,7 +455,7 @@ def api_trade():
                 user_positions[sector] += qty
                 user_entry_prices[sector] = current_p
 
-    return jsonify({"status": "success"})
+    return jsonify({"status": "success", "vwap": current_p})
 
 
 @server.route("/api/portfolio", methods=["GET"])
