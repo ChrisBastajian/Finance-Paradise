@@ -2,61 +2,61 @@
   {
     "event": "New AI breakthrough",
     "description": "Gemini is now able to rewrite its own code making it the first sentient AI",
-    "effects": { "Information Technology": [10, 20, 7], "Health Care": [5, 5, 5], "Financials": [6, 5, 6] }
+    "effects": { "Information Technology": [10, 200, 7], "Health Care": [5, 50, 5], "Financials": [6, 50, 6] }
   },
   {
     "event": "Global Market Crash",
     "description": "Housing market fraud exposed, causing a cascading liquidity crisis across major banks.",
-    "effects": { "Information Technology": [1, 20, 3], "Health Care": [3, 10, 4], "Financials": [1, 25, 2] }
+    "effects": { "Information Technology": [1, 200, 3], "Health Care": [3, 100, 4], "Financials": [1, 250, 2] }
   },
   {
     "event": "Major Vaccine Approval",
     "description": "Revolutionary universal vaccine approved, ending major seasonal viruses.",
-    "effects": { "Information Technology": [6, 10, 5], "Health Care": [10, 15, 8], "Financials": [7, 5, 6] }
+    "effects": { "Information Technology": [6, 100, 5], "Health Care": [10, 150, 8], "Financials": [7, 50, 6] }
   },
   {
     "event": "Geopolitical Tension Escalates",
     "description": "Global supply chains halted as major superpowers impose strict embargoes.",
-    "effects": { "Information Technology": [2, 15, 4], "Health Care": [5, 10, 5], "Financials": [2, 15, 3] }
+    "effects": { "Information Technology": [2, 150, 4], "Health Care": [5, 100, 5], "Financials": [2, 150, 3] }
   },
   {
     "event": "Central Bank Interest Rate Hike",
     "description": "Unexpected 75 bps rate hike shocks the market, borrowing costs soar.",
-    "effects": { "Information Technology": [2, 15, 4], "Health Care": [5, 5, 5], "Financials": [8, 10, 6] }
+    "effects": { "Information Technology": [2, 150, 4], "Health Care": [5, 50, 5], "Financials": [8, 100, 6] }
   },
   {
     "event": "Oil Supply Shock",
     "description": "Major oil fields go offline unexpectedly, causing energy prices to skyrocket.",
-    "effects": { "Information Technology": [3, 10, 5], "Health Care": [5, 5, 5], "Financials": [4, 10, 5], "Energy": [10, 20, 8] }
+    "effects": { "Information Technology": [3, 100, 5], "Health Care": [5, 50, 5], "Financials": [4, 100, 5], "Energy": [10, 200, 8] }
   },
   {
     "event": "Federal Reserve Cuts Rates",
     "description": "Fed announces aggressive rate cuts to stimulate the economy. Cheap money floods the market.",
-    "effects": { "Information Technology": [9, 20, 8], "Health Care": [7, 10, 7], "Financials": [4, 15, 5] }
+    "effects": { "Information Technology": [9, 200, 8], "Health Care": [7, 100, 7], "Financials": [4, 150, 5] }
   },
   {
     "event": "Quantum Computing Milestones",
     "description": "Commercial quantum computers hit the market, revolutionizing cryptography and processing.",
-    "effects": { "Information Technology": [10, 25, 9], "Health Care": [8, 10, 7], "Financials": [7, 10, 7] }
+    "effects": { "Information Technology": [10, 250, 9], "Health Care": [8, 100, 7], "Financials": [7, 100, 7] }
   },
   {
     "event": "Global Trade Pact Signed",
     "description": "Historic trade agreement drops tariffs to zero between major global economies.",
-    "effects": { "Information Technology": [8, 20, 8], "Health Care": [7, 15, 7], "Financials": [9, 20, 8], "Industrials": [10, 20, 9] }
+    "effects": { "Information Technology": [8, 200, 8], "Health Care": [7, 150, 7], "Financials": [9, 200, 8], "Industrials": [10, 200, 9] }
   },
   {
     "event": "Semiconductor Supply Surge",
     "description": "Massive new foundries come online, ending chip shortages and lowering tech costs.",
-    "effects": { "Information Technology": [9, 15, 8], "Health Care": [6, 5, 6], "Consumer Discretionary": [8, 10, 7] }
+    "effects": { "Information Technology": [9, 150, 8], "Health Care": [6, 50, 6], "Consumer Discretionary": [8, 100, 7] }
   },
   {
     "event": "Universal Basic Income Trial Success",
     "description": "Nationwide UBI trial shows massive boost to consumer spending and tech adoption.",
-    "effects": { "Information Technology": [8, 15, 7], "Consumer Discretionary": [10, 20, 8], "Financials": [7, 10, 6] }
+    "effects": { "Information Technology": [8, 150, 7], "Consumer Discretionary": [10, 200, 8], "Financials": [7, 100, 6] }
   },
   {
     "event": "Breakthrough in Clean Energy",
     "description": "Commercial fusion reactor achieves net-positive energy, lowering operational costs globally.",
-    "effects": { "Information Technology": [9, 25, 9], "Energy": [1, 30, 2], "Utilities": [10, 20, 9], "Industrials": [9, 20, 8] }
+    "effects": { "Information Technology": [9, 250, 9], "Energy": [1, 300, 2], "Utilities": [10, 200, 9], "Industrials": [9, 200, 8] }
   }
 ]

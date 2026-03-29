@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Paradise | Live Market</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom, #87CEEB, #e2cf63);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: 40px;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: -0.5px;
+        }
+
+        .news-ticker-bar {
+            width: 100%;
+            background: #0f172a;
+            color: #fbbf24;
+            padding: 10px 0;
+            border-bottom: 2px solid #f59e0b;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker-scroll 20s linear infinite;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes ticker-scroll {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        .main-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+            width: 95%;
+            max-width: 1400px;
+            margin-top: 15px;
+            padding-bottom: 40px;
+        }
+
+        #chart-frame {
+            flex: 3;
+            height: 600px;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            background: #000;
+        }
+
+        .panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 300px;
+        }
+
+        .portfolio-card {
+            background: rgba(15, 23, 42, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+            font-size: 0.95rem;
+        }
+
+        .portfolio-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .portfolio-row:last-child { margin-bottom: 0; }
+        .val-green { color: #10b981; font-weight: 700; }
+        .val-red { color: #ef4444; font-weight: 700; }
+        .val-neutral { color: #38bdf8; font-weight: 700; }
+
+        label {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        select {
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            font-family: 'Poppins';
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Poppins';
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+        }
+
+        .news-btn { background: linear-gradient(45deg, #f59e0b, #d97706); width: 100%; }
+        .buy-btn { background: #10b981; flex: 1; }
+        .sell-btn { background: #ef4444; flex: 1; }
+        .back-btn { background: #475569; margin-top: auto; }
+
+        .slider-container {
+            background: rgba(255,255,255,0.3);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #cbd5e1;
+            outline: none;
+            appearance: none;
+            margin-top: 12px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #0f172a;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="news-bar" class="news-ticker-bar">
+        <div class="ticker-wrap">
+            <div id="ticker-text" class="ticker-content">
+                AWAITING MARKET DATA FEED...
+            </div>
+        </div>
+    </div>
+
+    <h1>Market Simulator 📈</h1>
+
+    <div class="main-wrapper">
+        <iframe id="chart-frame" src="/dash-chart/?tf=1"></iframe>
+
+        <div class="panel">
+
+            <div class="portfolio-card">
+                <div class="portfolio-row">
+                    <span>Balance:</span>
+                    <span id="ui-balance" class="val-neutral">$100,000.00</span>
+                </div>
+                <div class="portfolio-row">
+                    <span>Total Realized PnL:</span>
+                    <span id="ui-realized" class="val-neutral">$0.00</span>
+                </div>
+                <hr style="border-top: 1px solid rgba(255,255,255,0.2); margin: 12px 0;">
+                <div class="portfolio-row">
+                    <span>Open Position:</span>
+                    <span id="ui-position" class="val-neutral">0</span>
+                </div>
+                <div class="portfolio-row">
+                    <span>Current PnL:</span>
+                    <span id="ui-unrealized" class="val-neutral">$0.00</span>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label>Chart Timeframe</label>
+                <select id="tf-select" onchange="updateTF()" style="margin-top: 8px;">
+                    <option value="1">1 Minute</option>
+                    <option value="5">5 Minutes</option>
+                    <option value="15">15 Minutes</option>
+                    <option value="60">1 Hour</option>
+                    <option value="240">4 Hours</option>
+                </select>
+            </div>
+
+            <button class="news-btn" onclick="triggerNews()">📰 TRIGGER MARKET NEWS</button>
+
+            <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: 5px 0;">
+
+            <div class="slider-container">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label>Contracts</label>
+                    <span id="contractVal" style="font-weight: 700; color: #0f172a; font-size: 1.1rem;">50</span>
+                </div>
+                <input type="range" min="1" max="500" value="50" id="contractSlider">
+            </div>
+
+            <div class="btn-group">
+                <button class="buy-btn" onclick="executeTrade('BUY')">BUY</button>
+                <button class="sell-btn" onclick="executeTrade('SELL')">SELL</button>
+            </div>
+
+            <button class="back-btn" onclick="window.location.href='/'">⬅ RETURN TO HUB</button>
+        </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById("contractSlider");
+        const valDisp = document.getElementById("contractVal");
+        const iframe = document.getElementById("chart-frame");
+        const newsBar = document.getElementById("news-bar");
+        const tickerText = document.getElementById("ticker-text");
+
+        // Update Slider Value
+        slider.oninput = () => {
+            valDisp.textContent = slider.value;
+        };
+
+        // Pass timeframe to Dash backend
+        function updateTF() {
+            const tf = document.getElementById("tf-select").value;
+            iframe.src = `/dash-chart/?tf=${tf}`;
+        }
+
+        // Trigger News Engine
+        function triggerNews() {
+            fetch('/api/trigger-news', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    tickerText.textContent = `🚨 BREAKING: ${data.headline} — ${data.description} 🚨`;
+                    newsBar.style.display = 'block';
+                    setTimeout(() => { newsBar.style.display = 'none'; }, 20000);
+                }
+            })
+            .catch(err => console.error("Error fetching news:", err));
+        }
+
+        // Execute Real Trade
+        function executeTrade(side) {
+            const contracts = parseInt(slider.value);
+            fetch('/api/trade', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: side, contracts: contracts })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    console.log(`Successfully executed ${side} order for ${contracts} contracts.`);
+                    pollPortfolio();
+                }
+            });
+        }
+
+        const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
+        // Update Portfolio Live
+        function pollPortfolio() {
+            fetch('/api/portfolio')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('ui-balance').textContent = formatter.format(data.balance);
+
+                const realizedEl = document.getElementById('ui-realized');
+                realizedEl.textContent = formatter.format(data.realized_pnl);
+                realizedEl.className = data.realized_pnl > 0 ? 'val-green' : (data.realized_pnl < 0 ? 'val-red' : 'val-neutral');
+
+                const posEl = document.getElementById('ui-position');
+                posEl.textContent = data.position;
+                posEl.className = data.position > 0 ? 'val-green' : (data.position < 0 ? 'val-red' : 'val-neutral');
+
+                const unrealizedEl = document.getElementById('ui-unrealized');
+                unrealizedEl.textContent = formatter.format(data.unrealized_pnl);
+                unrealizedEl.className = data.unrealized_pnl > 0 ? 'val-green' : (data.unrealized_pnl < 0 ? 'val-red' : 'val-neutral');
+            });
+        }
+
+        // Watch the PnL live
+        setInterval(pollPortfolio, 500);
+    </script>
+</body>
+</html>
