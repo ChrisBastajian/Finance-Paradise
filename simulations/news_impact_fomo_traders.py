@@ -9,6 +9,7 @@ import threading
 import time
 import json
 import os
+from dash import State
 
 np.random.seed(3)
 
@@ -296,40 +297,63 @@ def simulation_loop():
 # -----------------------
 app = Dash(__name__)
 app.layout = html.Div([
-    html.H2("Live 1-Min Candlestick Simulation"),
-    dcc.Graph(id="live-chart"),
+    html.H2("Interactive Market Simulation"),
+    dcc.Graph(
+        id="live-chart",
+        # This config enables TradingView-style interactions
+        config={
+            'scrollZoom': True,      # Zoom with mouse wheel
+            'displayModeBar': True,  # Show the helper tools
+            'modeBarButtonsToRemove': ['select2d', 'lasso2d'],
+        }
+    ),
     dcc.Interval(id="interval", interval=500, n_intervals=0),
     html.Button("Trigger News", id="news-button", n_clicks=0)
 ])
 
+
 @app.callback(
     Output("live-chart", "figure"),
-    Input("interval", "n_intervals")
+    Input("interval", "n_intervals"),
+    State("live-chart", "relayoutData")
 )
-def update_chart(_):
+def update_chart(_, relayout_data):
     with lock:
-        if len(candles)==0:
+        if len(candles) == 0:
             return go.Figure()
-        o = [c[0] for c in candles]
-        h = [c[1] for c in candles]
-        l = [c[2] for c in candles]
-        c_ = [c[3] for c in candles]
-        vol_buy = volume_buy
-        vol_sell = volume_sell
+
+        indices = list(range(len(candles)))
+        o, h, l, c_ = [c[0] for c in candles], [c[1] for c in candles], [c[2] for c in candles], [c[3] for c in candles]
 
     fig = go.Figure()
-    fig.add_trace(go.Candlestick(x=list(range(len(candles))), open=o, high=h, low=l, close=c_, name="Price", yaxis="y1"))
-    fig.add_trace(go.Bar(x=list(range(len(vol_buy))), y=vol_buy, marker_color='green', name='Buy Volume', yaxis="y2"))
-    fig.add_trace(go.Bar(x=list(range(len(vol_sell))), y=vol_sell, marker_color='red', name='Sell Volume', yaxis="y2"))
+
+    # Traces
+    fig.add_trace(go.Candlestick(x=indices, open=o, high=h, low=l, close=c_, name="Price"))
+    fig.add_trace(go.Bar(x=indices, y=volume_buy, marker_color='rgba(0,255,0,0.3)', yaxis="y2", name="Buy"))
+    fig.add_trace(go.Bar(x=indices, y=volume_sell, marker_color='rgba(255,0,0,0.3)', yaxis="y2", name="Sell"))
+
     fig.update_layout(
-        height=600,
-        width=900,
-        xaxis_rangeslider_visible=False,
         template='plotly_dark',
-        yaxis=dict(domain=[0.3,1]),
-        yaxis2=dict(domain=[0,0.25], showgrid=False),
-        barmode='stack'
+        uirevision='constant',  # KEEP THIS: It prevents the "reset" on every tick
+        dragmode='pan',  # Default to "Hand" tool for dragging
+        xaxis=dict(
+            rangeslider_visible=False,
+            showgrid=True,
+            zeroline=False,
+            # If you want it to start at a certain zoom level but then stay manual:
+            # range=[len(indices)-60, len(indices)+2] if _ < 2 else None
+        ),
+        yaxis=dict(
+            side="right",
+            fixedrange=False,  # Essential for scaling
+            autorange=True if relayout_data is None else None  # Autoscale ONLY on first load
+        ),
+        yaxis2=dict(domain=[0, 0.2], showgrid=False, anchor="x", overlaying="y", side="left"),
+        margin=dict(l=10, r=50, t=30, b=30),
+        height=700,
+        showlegend=False
     )
+
     return fig
 
 @app.callback(
