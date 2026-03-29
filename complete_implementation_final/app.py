@@ -110,17 +110,19 @@ class Market:
         delta = new_panic - old_panic
         redistribute = -delta
 
-        if news_data_val > 5:
-            self.percentages[0] += 0.5 * redistribute
-            self.percentages[1] += 0.2 * redistribute
-            self.percentages[2] += 0.1 * redistribute
-            self.percentages[5] += 0.2 * redistribute
-        else:
-            self.percentages[0] += 0.1 * redistribute
-            self.percentages[1] += 0.1 * redistribute
-            self.percentages[2] += 0.2 * redistribute
-            self.percentages[3] += 0.3 * redistribute
-            self.percentages[4] += 0.3 * redistribute
+        if news_data_val > 5:  # bullish
+            self.percentages[0] += 0.35 * redistribute  # ["trend", "aggr_trend", "mean", "panic", "aggr_panic", "fundamental", "noise"]
+            self.percentages[1] += 0.2075 * redistribute  #
+            self.percentages[2] += 0.135 * redistribute  #
+            self.percentages[5] += 0.2075 * redistribute  #
+            self.percentages[6] += 0.1 * redistribute  #
+        else:  # bearish
+            self.percentages[0] += 0.0663 * redistribute
+            self.percentages[1] += 0.1602 * redistribute
+            self.percentages[2] += 0.2014 * redistribute
+            self.percentages[3] += 0.2392 * redistribute
+            self.percentages[4] += 0.2014 * redistribute
+            self.percentages[6] += 0.1315 * redistribute
 
         # FIX: Protect against ZeroDivisionError if percentages zero out
         total = sum(self.percentages)
