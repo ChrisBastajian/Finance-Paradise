@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #87CEEB; font-family: 'Poppins', sans-serif; padding: 50px; }
+        .card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Results for "{{ query }}"</h1>
+    {% for item in results %}
+        <div class="card">
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.content }}</p>
+        </div>
+    {% endfor %}
+    <button onclick="location.href='/'">Back Home</button>
+</body>
+</html>
