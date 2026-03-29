@@ -82,7 +82,7 @@ def change_percentages(news_data_val):
     redistribute = -delta
 
     if news_data_val > 5:  # bullish
-        percentages[0] += 0.5 * redistribute
+        percentages[0] += 0.5 * redistribute #["trend", "aggr_trend", "mean", "panic", "aggr_panic", "fundamental", "noise"]
         percentages[1] += 0.2 * redistribute
         percentages[2] += 0.1 * redistribute
         percentages[5] += 0.2 * redistribute
