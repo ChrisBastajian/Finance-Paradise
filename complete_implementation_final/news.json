@@ -1,8 +1,8 @@
 [
   {
-    "event": "New AI breakthrough",
-    "description": "Gemini is now able to rewrite its own code making it the first sentient AI",
-    "effects": { "Information Technology": [10, 200, 7], "Health Care": [5, 50, 5], "Financials": [6, 50, 6] }
+    "event": "New AI breakthrough, Gemini Invades North Korea",
+    "description": "Gemini Infiltrates North Korean Defense Database and Starts Nuclear War",
+    "effects": { "Information Technology": [2, 200, 5], "Health Care": [5, 50, 5], "Financials": [1, 50, 6] }
   },
   {
     "event": "Global Market Crash",
@@ -20,9 +20,9 @@
     "effects": { "Information Technology": [2, 150, 4], "Health Care": [5, 100, 5], "Financials": [2, 150, 3] }
   },
   {
-    "event": "Central Bank Interest Rate Hike",
-    "description": "Unexpected 75 bps rate hike shocks the market, borrowing costs soar.",
-    "effects": { "Information Technology": [2, 150, 4], "Health Care": [5, 50, 5], "Financials": [8, 100, 6] }
+    "event": "Dogs and Cats No Longer Peaceful",
+    "description": "Declare Pet Civil War",
+    "effects": { "Information Technology": [5, 150, 5], "Health Care": [5, 50, 5], "Financials": [2, 100, 5] }
   },
   {
     "event": "Oil Supply Shock",
@@ -50,13 +50,13 @@
     "effects": { "Information Technology": [9, 150, 8], "Health Care": [6, 50, 6], "Consumer Discretionary": [8, 100, 7] }
   },
   {
-    "event": "Universal Basic Income Trial Success",
-    "description": "Nationwide UBI trial shows massive boost to consumer spending and tech adoption.",
+    "event": "Mars Exploration Efforts Hit All-Time High",
+    "description": "New Nasa Program Colonizes Mars",
     "effects": { "Information Technology": [8, 150, 7], "Consumer Discretionary": [10, 200, 8], "Financials": [7, 100, 6] }
   },
   {
-    "event": "Breakthrough in Clean Energy",
-    "description": "Commercial fusion reactor achieves net-positive energy, lowering operational costs globally.",
-    "effects": { "Information Technology": [9, 250, 9], "Energy": [1, 300, 2], "Utilities": [10, 200, 9], "Industrials": [9, 200, 8] }
+    "event": "Mars Natives Refuse Colonization",
+    "description": "Retaliate by Earth Alien Invasion",
+    "effects": { "Information Technology": [4, 250, 5], "Financials": [3, 100, 5], "Industrials": [9, 200, 8] }
   }
 ]
