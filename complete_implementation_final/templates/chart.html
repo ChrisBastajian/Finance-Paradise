@@ -113,17 +113,14 @@
 
         slider.oninput = () => { valDisp.textContent = slider.value; };
 
-        // Unified update function for the iframe query params
         function updateChartParams() {
             const tf = tfSelect.value;
             const sector = encodeURIComponent(sectorSelect.value);
             iframe.src = `/dash-chart/?tf=${tf}&sector=${sector}`;
 
-            // Update UI text
             let shortName = sectorSelect.options[sectorSelect.selectedIndex].text;
             document.getElementById("ui-sector-label").textContent = `${shortName} Pos:`;
 
-            // Force immediate portfolio update when switching charts
             pollPortfolio();
         }
 
@@ -139,7 +136,6 @@
             });
         }
 
-        // Pass the currently selected sector in the trade payload
         function executeTrade(side) {
             const contracts = parseInt(slider.value);
             const sector = sectorSelect.value;
@@ -154,7 +150,6 @@
 
         const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
-        // Query portfolio data specifically for the selected sector
         function pollPortfolio() {
             const sector = encodeURIComponent(sectorSelect.value);
             fetch(`/api/portfolio?sector=${sector}`)

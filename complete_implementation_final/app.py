@@ -38,7 +38,6 @@ SECTORS = [
 # -----------------------
 user_balance = 100000.0
 user_realized_pnl = 0.0
-# Track positions and entry prices mapped by sector
 user_positions = {s: 0 for s in SECTORS + ["Total Market"]}
 user_entry_prices = {s: 0.0 for s in SECTORS + ["Total Market"]}
 
@@ -60,7 +59,6 @@ def remove_order(book, plist, p, vol):
         plist.remove(p)
 
 
-# We use a global persistent side for noise traders
 last_side = np.random.choice(["buy", "sell"])
 
 
@@ -90,14 +88,12 @@ class Market:
         self.vol_sell_candle = 0
         self.candles = []
 
-        # News/Bias specific to this sector
         self.market_bias = 0.0
         self.news_candles_remaining = 0
         self.long_term_effect = 1.0
         self.volatility_mult = 1.0
         self.percentages = [0.2, 0.1, 0.15, 0.2, 0.1, 0.15, 0.1]
 
-        # Each sector gets its own pool of active traders
         self.traders = [Trader(self) for _ in range(N_TRADERS)]
 
     def change_percentages(self, news_data_val):
@@ -112,12 +108,12 @@ class Market:
         delta = new_panic - old_panic
         redistribute = -delta
 
-        if news_data_val > 5:  # bullish
+        if news_data_val > 5:
             self.percentages[0] += 0.5 * redistribute
             self.percentages[1] += 0.2 * redistribute
             self.percentages[2] += 0.1 * redistribute
             self.percentages[5] += 0.2 * redistribute
-        else:  # bearish
+        else:
             self.percentages[0] += 0.1 * redistribute
             self.percentages[1] += 0.1 * redistribute
             self.percentages[2] += 0.2 * redistribute
@@ -127,7 +123,6 @@ class Market:
         total = sum(self.percentages)
         self.percentages = [max(0, p / total) for p in self.percentages]
 
-        # Force traders to update their psychology dynamically based on the new percentages
         types = ["trend", "aggr_trend", "mean", "panic", "aggr_panic", "fundamental", "noise"]
         for t in self.traders:
             t.type = np.random.choice(types, p=self.percentages)
@@ -171,7 +166,6 @@ class Trader:
         return ("limit", side, p_limit, np.random.randint(1, 3))
 
 
-# Initialize sector markets + 1 dummy market for Total Market aggregation
 markets = {s: Market(s) for s in SECTORS}
 total_market = Market("Total Market")
 
@@ -183,7 +177,6 @@ def simulation_loop():
     t = 0
     while True:
         with lock:
-            # Step 1: Simulate every sector independently
             for name, mkt in markets.items():
                 mkt.price *= (1 + LONG_TERM_DRIFT * PRICE_SCALE)
 
@@ -211,7 +204,6 @@ def simulation_loop():
                             mkt.price += (bp - mkt.price) * PRICE_SCALE
                             mkt.vol_sell_candle += vol
 
-                # Match Limit Orders
                 trades = []
                 while mkt.bid_prices and mkt.ask_prices and mkt.bid_prices[-1] >= mkt.ask_prices[0]:
                     bp, ap = mkt.bid_prices[-1], mkt.ask_prices[0]
@@ -239,7 +231,6 @@ def simulation_loop():
                 mkt.ref_price = 0.99 * mkt.ref_price + 0.01 * mkt.price
                 mkt.prices.append(mkt.price)
 
-                # Process fading news effects
                 if mkt.news_candles_remaining > 1:
                     mkt.news_candles_remaining -= 1
                 elif mkt.news_candles_remaining == 1:
@@ -247,14 +238,12 @@ def simulation_loop():
                     mkt.news_candles_remaining -= 1
                     mkt.market_bias = 0.0
 
-            # Step 2: Aggregate the "Total Market" price and volume
             avg_price = sum(m.price for m in markets.values()) / len(markets)
             total_market.price = avg_price
             total_market.prices.append(avg_price)
             total_market.vol_buy_candle += sum(m.vol_buy_candle for m in markets.values())
             total_market.vol_sell_candle += sum(m.vol_sell_candle for m in markets.values())
 
-            # Step 3: Candle generation for everything
             if (t + 1) % CANDLE_SIZE == 0:
                 all_markets = list(markets.values()) + [total_market]
                 for mkt in all_markets:
@@ -267,10 +256,15 @@ def simulation_loop():
                         chunk = mkt.prices[-CANDLE_SIZE:]
                         mkt.candles.append((chunk[0], max(chunk), min(chunk), chunk[-1]))
 
-                    if len(mkt.candles) > 1000:
-                        mkt.candles.pop(0)
-                        mkt.volume_buy.pop(0)
-                        mkt.volume_sell.pop(0)
+                    # PREVENT MEMORY LEAK: Keep raw prices short
+                    if len(mkt.prices) > 50:
+                        mkt.prices = mkt.prices[-50:]
+
+                    # Store plenty of candles for higher timeframes
+                    if len(mkt.candles) > 15000:
+                        mkt.candles = mkt.candles[-15000:]
+                        mkt.volume_buy = mkt.volume_buy[-15000:]
+                        mkt.volume_sell = mkt.volume_sell[-15000:]
 
         t += 1
         time.sleep(0.1)
@@ -303,7 +297,6 @@ def api_trigger_news():
         effects = event_data.get('effects', {})
 
         with lock:
-            # Apply news ONLY to the affected sectors
             for sector_name, stats in effects.items():
                 if sector_name in markets:
                     mkt = markets[sector_name]
@@ -441,6 +434,13 @@ def update_chart(_, search, relayout):
         current_entry_price = user_entry_prices.get(sector, 0.0)
 
     display_candles, vol_b, vol_s = aggregate_candles(base_c, base_b, base_s, tf)
+
+    # --- ENFORCE MAXIMUM VISIBLE CANDLES ---
+    MAX_VISIBLE = 300
+    display_candles = display_candles[-MAX_VISIBLE:]
+    vol_b = vol_b[-MAX_VISIBLE:]
+    vol_s = vol_s[-MAX_VISIBLE:]
+
     indices = list(range(len(display_candles)))
 
     fig = go.Figure()
