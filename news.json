@@ -1,8 +1,9 @@
 [
   {
     "event": "New AI breakthrough",
+    "description": "Gemini is now able to rewrite its own code making it the first sentient AI",
     "effects": {
-      "Information Technology": [8, 5, 7],
+      "Information Technology": [10, 5, 7],
       "Health Care": [5, 5, 5],
       "Financials": [6, 5, 6],
       "Consumer Discretionary": [5, 5, 5],
@@ -17,8 +18,9 @@
   },
   {
     "event": "Global Market Crash",
+    "description": "As more and more appraiser come forth about housing market fraud the market crashes as housing prices drop",
     "effects": {
-      "Information Technology": [2, 20, 3],
+      "Information Technology": [1, 20, 3],
       "Health Care": [3, 10, 4],
       "Financials": [2, 20, 3],
       "Consumer Discretionary": [2, 20, 2],
@@ -33,8 +35,9 @@
   },
   {
     "event": "Major Vaccine Approval",
+    "description": "Johnson and Johnson vaccine approved to treat lactose intolerance",
     "effects": {
-      "Information Technology": [5, 5, 5],
+      "Information Technology": [10, 5, 5],
       "Health Care": [9, 10, 8],
       "Financials": [6, 5, 6],
       "Consumer Discretionary": [7, 5, 6],
@@ -49,8 +52,9 @@
   },
   {
     "event": "Geopolitical Tension Escalates",
+    "description": "USA declares war on United Kingdom claiming to speak superior english",
     "effects": {
-      "Information Technology": [4, 10, 4],
+      "Information Technology": [1, 10, 4],
       "Health Care": [5, 10, 5],
       "Financials": [3, 15, 3],
       "Consumer Discretionary": [4, 10, 4],
@@ -65,8 +69,9 @@
   },
   {
     "event": "Central Bank Interest Rate Hike",
+    "description": "as interest rates spike many holding adjustable rate mortgages struggle to make payments",
     "effects": {
-      "Information Technology": [4, 5, 4],
+      "Information Technology": [1, 5, 4],
       "Health Care": [5, 5, 5],
       "Financials": [7, 10, 6],
       "Consumer Discretionary": [3, 5, 3],
@@ -81,18 +86,63 @@
   },
   {
     "event": "Oil Supply Shock",
+    "description": "oil wells in the saudis dry up leading to a shortage in oil supply",
     "effects": {
-      "Information Technology": [5, 5, 5],
-      "Health Care": [5, 5, 5],
-      "Financials": [5, 5, 5],
-      "Consumer Discretionary": [4, 5, 4],
-      "Communication Services": [5, 5, 5],
-      "Industrials": [6, 5, 6],
-      "Consumer Staples": [5, 5, 5],
-      "Energy": [9, 10, 8],
-      "Utilities": [6, 5, 6],
-      "Real Estate": [5, 5, 5],
-      "Materials": [6, 5, 6]
+      "Information Technology": [
+        1,
+        5,
+        5
+      ],
+      "Health Care": [
+        5,
+        5,
+        5
+      ],
+      "Financials": [
+        5,
+        5,
+        5
+      ],
+      "Consumer Discretionary": [
+        4,
+        5,
+        4
+      ],
+      "Communication Services": [
+        5,
+        5,
+        5
+      ],
+      "Industrials": [
+        6,
+        5,
+        6
+      ],
+      "Consumer Staples": [
+        5,
+        5,
+        5
+      ],
+      "Energy": [
+        9,
+        10,
+        8
+      ],
+      "Utilities": [
+        6,
+        5,
+        6
+      ],
+      "Real Estate": [
+        5,
+        5,
+        5
+      ],
+      "Materials": [
+        6,
+        5,
+        6
+      ]
     }
   }
-]
+  ]
