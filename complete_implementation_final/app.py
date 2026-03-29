@@ -40,6 +40,7 @@ user_balance = 100000.0
 user_realized_pnl = 0.0
 user_positions = {s: 0 for s in SECTORS + ["Total Market"]}
 user_entry_prices = {s: 0.0 for s in SECTORS + ["Total Market"]}
+user_impact_enabled = False  # Toggle for market impact
 
 lock = threading.Lock()
 
@@ -139,6 +140,7 @@ class Trader:
         self.memory.append(current_p)
         if len(self.memory) > 10: self.memory.pop(0)
 
+        # Trend traders (Same for all sectors)
         if self.type == "trend" and len(self.memory) > 3:
             trend = self.memory[-1] - self.memory[-4]
             return ("market", "buy" if trend > 0 else "sell", np.random.randint(2, 5))
@@ -147,19 +149,44 @@ class Trader:
             trend = self.memory[-1] - self.memory[-4] + self.mkt.market_bias * current_p * 0.02
             return ("market", "buy" if trend > 0 else "sell", np.random.randint(5, 12))
 
+        # Mean reversion traders (Same for all sectors)
         if self.type == "mean":
             return ("market", "sell" if current_p > ref else "buy", np.random.randint(1, 4))
 
         dev = abs(current_p - ref) / ref
+
+        # --- SPLIT LOGIC: Tech gets the old behavior, everything else gets the fixed behavior ---
+        is_tech = (self.mkt.name == "Information Technology")
+
         if self.type == "panic" and dev > (0.01 * self.mkt.volatility_mult):
-            return ("market", "buy" if current_p < ref else "sell", np.random.randint(3, 6))
+            if is_tech:
+                # OLD LOGIC (Value investing / "Buy the dip" during crashes)
+                return ("market", "buy" if current_p < ref else "sell", np.random.randint(3, 6))
+            else:
+                # NEW LOGIC (Actual panic / FOMO buying)
+                return ("market", "buy" if current_p > ref else "sell", np.random.randint(3, 6))
 
         if self.type == "aggr_panic" and dev > (0.005 * self.mkt.volatility_mult):
-            return ("market", "buy" if current_p < ref else "sell", np.random.randint(6, 15))
+            if is_tech:
+                # OLD LOGIC
+                return ("market", "buy" if current_p < ref else "sell", np.random.randint(6, 15))
+            else:
+                # NEW LOGIC
+                return ("market", "buy" if current_p > ref else "sell", np.random.randint(6, 15))
 
         if self.type == "fundamental":
-            return ("market", "buy" if self.mkt.market_bias > 0 else "sell", np.random.randint(4, 10))
+            if is_tech:
+                # OLD LOGIC (Permabear: spams sell orders when no news bias is present)
+                return ("market", "buy" if self.mkt.market_bias > 0 else "sell", np.random.randint(4, 10))
+            else:
+                # NEW LOGIC (Neutral/DCA accumulator when no news bias is present)
+                if self.mkt.market_bias == 0.0:
+                    if np.random.rand() < 0.10:
+                        return ("market", "buy", np.random.randint(1, 3))
+                    return None
+                return ("market", "buy" if self.mkt.market_bias > 0 else "sell", np.random.randint(4, 10))
 
+        # Noise traders / Market Makers (Same for all sectors)
         side = persistent_side()
         offset = -abs(np.random.exponential(0.3)) if side == "buy" else abs(np.random.exponential(0.3))
         p_limit = max(0.01, round((current_p + offset) / TICK_SIZE) * TICK_SIZE)
@@ -311,6 +338,14 @@ def api_trigger_news():
         return jsonify({"status": "error", "message": str(e)})
 
 
+@server.route("/api/toggle-impact", methods=["POST"])
+def api_toggle_impact():
+    global user_impact_enabled
+    with lock:
+        user_impact_enabled = not user_impact_enabled
+    return jsonify({"status": "success", "enabled": user_impact_enabled})
+
+
 @server.route("/api/trade", methods=["POST"])
 def api_trade():
     global user_balance, user_realized_pnl
@@ -320,8 +355,35 @@ def api_trade():
     sector = data.get("sector", "Total Market")
 
     with lock:
-        current_p = total_market.price if sector == "Total Market" else markets[sector].price
         qty = contracts if action == "BUY" else -contracts
+
+        # --- NEW: MARKET IMPACT LOGIC ---
+        if user_impact_enabled:
+            # If Total Market, divide the order equally across all sectors
+            markets_to_impact = [markets[sector]] if sector != "Total Market" else list(markets.values())
+            vol_per_market = abs(qty) // len(markets_to_impact) if sector == "Total Market" else abs(qty)
+
+            for m in markets_to_impact:
+                remaining_vol = vol_per_market
+                if action == "BUY":
+                    while remaining_vol > 0 and m.ask_prices:
+                        ap = m.ask_prices[0]
+                        take_vol = min(remaining_vol, m.asks[ap])
+                        remove_order(m.asks, m.ask_prices, ap, take_vol)
+                        m.price += (ap - m.price) * PRICE_SCALE
+                        m.vol_buy_candle += take_vol
+                        remaining_vol -= take_vol
+                else:  # SELL
+                    while remaining_vol > 0 and m.bid_prices:
+                        bp = m.bid_prices[-1]
+                        take_vol = min(remaining_vol, m.bids[bp])
+                        remove_order(m.bids, m.bid_prices, bp, take_vol)
+                        m.price += (bp - m.price) * PRICE_SCALE
+                        m.vol_sell_candle += take_vol
+                        remaining_vol -= take_vol
+        # --------------------------------
+
+        current_p = total_market.price if sector == "Total Market" else markets[sector].price
 
         u_pos = user_positions[sector]
         u_entry = user_entry_prices[sector]
